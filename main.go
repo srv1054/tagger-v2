@@ -130,16 +130,12 @@ func main() {
 
 					// Handle direct messages to the Bot Name Mention
 					case *slackevents.AppMentionEvent:
-						if ev.Text == "reload" {
+						if strings.Contains(ev.Text, strings.ToLower("reload tags")) {
 							Spray, err = LoadSprayCans(sprayPath)
 							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Sure, I have reloaded your tags.json file.", false))
 							if err != nil {
 								fmt.Printf("failed posting message: %v", err)
 							}
-						}
-						_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello.", false))
-						if err != nil {
-							fmt.Printf("failed posting message: %v", err)
 						}
 
 					// check messages for option to tag them
