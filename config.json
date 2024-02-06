@@ -1,6 +1,7 @@
 {
 	"slackhook": "",
-	"slacktoken": "",
+	"slackapptoken": "",
+	"slackbottoken": "",
 	"botid": "",
 	"botname": "",
 	"teamid": "",

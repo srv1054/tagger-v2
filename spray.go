@@ -12,12 +12,6 @@ func CheckTags(ev *slackevents.MessageEvent) {
 
 }
 
-// SprayCans - struct for storing search data and emoji tags read in from tag.json
-type SprayCans []struct {
-	Spray string   `json:"spray"`
-	Words []string `json:"words"`
-}
-
 // TagIt - check for and tag sumthin
 func TagIt(tagbot TagBot, paint SprayCans, ev *slack.MessageEvent) {
 
