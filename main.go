@@ -81,6 +81,7 @@ func main() {
 	if TagBot.LogChannel != "" && TagBot.SlackHook != "" {
 		Wrangler(TagBot.SlackHook, "Tagger `v"+version+"` is starting up", TagBot.LogChannel, attachment)
 		Wrangler(TagBot.SlackHook, strconv.Itoa(TagBot.TotalSprayCans)+" Spray Cans loaded via tags.json", TagBot.LogChannel, attachment)
+		Wrangler(TagBot.SlackHook, strconv.Itoa(TagBot.TotalWords)+" Words loaded via tags.json", TagBot.LogChannel, attachment)
 	}
 
 	// Setup Slack API
