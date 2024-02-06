@@ -1,3 +1,5 @@
 tagger.exe
 *.log
 tagger
+config.json
+tags.json
