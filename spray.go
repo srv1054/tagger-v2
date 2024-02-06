@@ -3,44 +3,44 @@ package main
 import (
 	"strings"
 
-	"github.com/nlopes/slack"
-
 	"github.com/slack-go/slack/slackevents"
 )
 
-func CheckTags(ev *slackevents.MessageEvent) {
+func CheckTags(ev *slackevents.MessageEvent, tagbot TagBot, paint SprayCans) {
 
-}
-
-// TagIt - check for and tag sumthin
-func TagIt(tagbot TagBot, paint SprayCans, ev *slack.MessageEvent) {
-
-	has, tag := cancontains(paint, strings.ToLower(ev.Msg.Text))
+	has, tags := cancontains(paint, strings.ToLower(ev.Text))
+	Logit("Evaluating: "+ev.Text, false, "info")
 
 	if has {
 		var payload ReactionPayload
 
 		payload.Channel = ev.Channel
-		payload.Name = tag
 		payload.Token = tagbot.SlackBotToken
-		payload.TimeStamp = ev.Timestamp
+		payload.TimeStamp = ev.TimeStamp
 
-		err := AddReaction(tagbot, payload)
-		if err != nil {
-			Logit("Tagit error catch: "+err.Error(), false, "err")
+		for _, tag := range tags {
+			payload.Name = tag
+			err := AddReaction(tagbot, payload)
+			if err != nil {
+				Logit("Tagit error catch: "+err.Error(), false, "err")
+			}
 		}
 	}
-
 }
 
-func cancontains(paint SprayCans, e string) (has bool, emoji string) {
+func cancontains(paint SprayCans, e string) (has bool, sprayArray []string) {
+
 	for _, p := range paint {
 		for _, t := range p.Words {
 			if strings.Contains(e, t) {
-				return true, p.Spray
+				sprayArray = append(sprayArray, p.Spray)
 			}
 		}
 	}
 
-	return false, ""
+	if len(sprayArray) > 0 {
+		return true, sprayArray
+	}
+
+	return false, nil
 }
