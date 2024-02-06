@@ -1,0 +1,12 @@
+{
+	"slackhook": "", 
+	"slackapptoken": "",
+	"slackbottoken": "",
+	"botid": "",
+	"botname": "",
+	"teamid": "",
+	"teamname": "",
+	"logchannel": "",
+	"sprayjsonpath": "",
+	"debug": false
+} 
