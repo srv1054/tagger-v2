@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.6"
+		version = "1.0.7"
 
 		attachment Attachment
 	)
@@ -127,12 +127,21 @@ func main() {
 				case slackevents.CallbackEvent:
 					innerEvent := eventsAPIEvent.InnerEvent
 					switch ev := innerEvent.Data.(type) {
+
 					// Handle direct messages to the Bot Name Mention
-					/* case *slackevents.AppMentionEvent:
-					_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello.", false))
-					if err != nil {
-						fmt.Printf("failed posting message: %v", err)
-					} */
+					case *slackevents.AppMentionEvent:
+						if ev.Text == "reload" {
+							Spray, err = LoadSprayCans(sprayPath)
+							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Sure, I have reloaded your tags.json file.", false))
+							if err != nil {
+								fmt.Printf("failed posting message: %v", err)
+							}
+						}
+						_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello.", false))
+						if err != nil {
+							fmt.Printf("failed posting message: %v", err)
+						}
+
 					// check messages for option to tag them
 					case *slackevents.MessageEvent:
 						if TagBot.Debug {
