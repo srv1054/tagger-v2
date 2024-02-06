@@ -16,7 +16,7 @@ import (
 func main() {
 
 	var (
-		version = "0.0.5"
+		version = "0.0.6"
 	)
 
 	// deal with CLI
@@ -44,6 +44,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	TagBot.Version = version
+
 	// Check for required variables
 	if TagBot.SlackAppToken == "" {
 		fmt.Fprintf(os.Stderr, "SLACK_APP_TOKEN must be set in config.json.\n")
@@ -53,7 +55,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "SLACK_APP_TOKEN must have the prefix \"xapp-\".")
 	}
 	if TagBot.SlackBotToken == "" {
-		fmt.Fprintf(os.Stderr, "SLACK_BOT_TOKEN must be set.\n")
+		fmt.Fprintf(os.Stderr, "SLACK_BOT_TOKEN must be set in config.json.\n")
 		os.Exit(1)
 	}
 	if !strings.HasPrefix(TagBot.SlackBotToken, "xoxb-") {
@@ -86,12 +88,15 @@ func main() {
 			case socketmode.EventTypeEventsAPI:
 				eventsAPIEvent, ok := evt.Data.(slackevents.EventsAPIEvent)
 				if !ok {
-					fmt.Printf("Ignored %+v\n", evt)
-
+					if TagBot.Debug {
+						fmt.Printf("Ignored %+v\n", evt)
+					}
 					continue
 				}
 
-				fmt.Printf("Event received: %+v\n", eventsAPIEvent)
+				if TagBot.Debug {
+					fmt.Printf("Event received: %+v\n", eventsAPIEvent)
+				}
 
 				client.Ack(*evt.Request)
 
@@ -99,84 +104,26 @@ func main() {
 				case slackevents.CallbackEvent:
 					innerEvent := eventsAPIEvent.InnerEvent
 					switch ev := innerEvent.Data.(type) {
+					// Handle direct messages to the Bot Name Mention
 					/* case *slackevents.AppMentionEvent:
-						_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello.", false))
-						if err != nil {
-							fmt.Printf("failed posting message: %v", err)
-						}
-					case *slackevents.MemberJoinedChannelEvent:
-						fmt.Printf("user %q joined to channel %q", ev.User, ev.Channel) */
+					_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello.", false))
+					if err != nil {
+						fmt.Printf("failed posting message: %v", err)
+					} */
+					// check messages for option to tag them
 					case *slackevents.MessageEvent:
-						fmt.Printf("%v", ev)
-						CheckTags(ev)
-						// message of any kind was received
-						// call function to check for matching words
-						// if found tag with emoji
+						if TagBot.Debug {
+							fmt.Printf("%v", ev)
+						}
+						CheckTags(ev, TagBot, Spray)
 					}
 				default:
 					client.Debugf("unsupported Events API event received")
 				}
-			/* case socketmode.EventTypeInteractive:
-				callback, ok := evt.Data.(slack.InteractionCallback)
-				if !ok {
-					fmt.Printf("Ignored %+v\n", evt)
-
-					continue
-				}
-
-				fmt.Printf("Interaction received: %+v\n", callback)
-
-				var payload interface{}
-
-				switch callback.Type {
-				case slack.InteractionTypeBlockActions:
-					// See https://api.slack.com/apis/connections/socket-implement#button
-
-					client.Debugf("button clicked!")
-				case slack.InteractionTypeShortcut:
-				case slack.InteractionTypeViewSubmission:
-					// See https://api.slack.com/apis/connections/socket-implement#modal
-				case slack.InteractionTypeDialogSubmission:
-				default:
-
-				}
-
-				client.Ack(*evt.Request, payload)
-			case socketmode.EventTypeSlashCommand:
-				cmd, ok := evt.Data.(slack.SlashCommand)
-				if !ok {
-					fmt.Printf("Ignored %+v\n", evt)
-
-					continue
-				}
-
-				client.Debugf("Slash command received: %+v", cmd)
-
-				payload := map[string]interface{}{
-					"blocks": []slack.Block{
-						slack.NewSectionBlock(
-							&slack.TextBlockObject{
-								Type: slack.MarkdownType,
-								Text: "foo",
-							},
-							nil,
-							slack.NewAccessory(
-								slack.NewButtonBlockElement(
-									"",
-									"somevalue",
-									&slack.TextBlockObject{
-										Type: slack.PlainTextType,
-										Text: "bar",
-									},
-								),
-							),
-						),
-					},
-				}
-
-				client.Ack(*evt.Request, payload) */
 			default:
-				fmt.Fprintf(os.Stderr, "Unexpected event type received: %s\n", evt.Type)
+				if TagBot.Debug {
+					fmt.Fprintf(os.Stderr, "Unexpected event type received: %s\n", evt.Type)
+				}
 			}
 		}
 	}()

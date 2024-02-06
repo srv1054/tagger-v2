@@ -3,7 +3,6 @@ module tagger
 go 1.21.6
 
 require (
-	github.com/nlopes/slack v0.6.0
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/slack-go/slack v0.12.3
 )
