@@ -1,105 +1,81 @@
-package tagger
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"runtime"
 )
 
-// MyBot - Bot Configuration Options
-type MyBot struct {
-	SlackHook  string `json:"slackhook"`
-	SlackToken string `json:"slacktoken"`
-	BotID      string `json:"botid"`
-	BotName    string `json:"botname"`
-	TeamID     string `json:"teamid"`
-	TeamName   string `json:"teamname"`
-	LogChannel string `json:"logchannel"`
-	Version    string `json:"version"`
-	ConfigPath string `json:"config"`
-	JSONPath   string `json:"json"`
-	Debug      bool   `json:"debug"`
+// TagBot - Bot Configuration Options
+type TagBot struct {
+	SlackHook     string `json:"slackhook"`
+	SlackAppToken string `json:"slackapptoken"`
+	SlackBotToken string `json:"slackbottoken"`
+	BotID         string `json:"botid"`
+	BotName       string `json:"botname"`
+	TeamID        string `json:"teamid"`
+	TeamName      string `json:"teamname"`
+	LogChannel    string `json:"logchannel"`
+	Version       string `json:"version"`
+	SprayJSONPath string `json:"sprayjsonpath"`
+	Debug         bool   `json:"debug"`
 }
 
-// ConfigFile - Configuration File options
-type ConfigFile struct {
-	LogChannel string `json:"logchannel"`
-	Debug      bool   `json:"debug"`
+// SprayCans - struct for storing search data and emoji tags read in from tag.json
+type SprayCans []struct {
+	Spray string   `json:"spray"`
+	Words []string `json:"words"`
 }
 
-// LoadBotConfig - Load Main Bot Configuration TOML
-func LoadBotConfig(myBot MyBot) (tmpBot ConfigFile, err error) {
+// LoadBotConfig - Load Main Bot Configuration JSON
+func LoadBotConfig(configPath string) (tagbot TagBot, err error) {
 	var fileName string
 
-	if myBot.ConfigPath == "" {
+	if configPath == "" {
 		fileName = "config.json"
-	} else {
-		if runtime.GOOS == "windows" {
-			fileName = myBot.ConfigPath + "\\config.json"
-		} else {
-			fileName = myBot.ConfigPath + "/config.json"
-		}
 	}
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		fmt.Println("Error opening config.json file: " + err.Error() + ".  Could not find path for " + fileName)
-		return tmpBot, err
+		Logit("error opening config.json file: "+err.Error(), true, "err")
+		return tagbot, err
 	}
 
 	decoded := json.NewDecoder(file)
-	err = decoded.Decode(&tmpBot)
+	err = decoded.Decode(&tagbot)
 	if err != nil {
-		fmt.Println("Error reading invalid config.json file: " + err.Error())
-		return tmpBot, err
+		Logit("error reading invalid config.json file: "+err.Error(), true, "err")
+		return tagbot, err
 	}
 
-	if tmpBot.Debug {
-		fmt.Printf("%+v", tmpBot)
+	if tagbot.Debug {
+		fmt.Printf("%+v", tagbot)
 	}
 
-	return tmpBot, nil
+	return tagbot, nil
 }
 
 // LoadSprayCans - Load tag.json tagger data file
 func LoadSprayCans(pathname string) (spray SprayCans, err error) {
+
 	var fileName string
 
 	if pathname == "" {
 		fileName = "tags.json"
-	} else {
-		if runtime.GOOS == "windows" {
-			fileName = pathname + "\\tags.json"
-		} else {
-			fileName = pathname + "/tags.json"
-		}
 	}
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		fmt.Println("Error opening tags.json file: " + err.Error() + ".   Could not find path for " + fileName)
+		Logit("Error opening tags.json file: "+err.Error(), true, "err")
 		return spray, err
 	}
 
 	decoded := json.NewDecoder(file)
 	err = decoded.Decode(&spray)
 	if err != nil {
-		fmt.Println("Error reading invalid tags.json file: " + err.Error())
+		Logit("Error reading invalid tags.json file: "+err.Error(), true, "err")
 		return spray, err
 	}
 
 	return spray, nil
-}
-
-// errTrap - Generic error handling function
-func errTrap(myBot MyBot, message string, err error) {
-	var attachments Attachment
-
-	if myBot.Debug {
-		fmt.Println(message + "(" + err.Error() + ")")
-	}
-	attachments.Color = "#ff0000"
-	attachments.Text = err.Error()
-	LogToSlack(message, myBot, attachments)
 }

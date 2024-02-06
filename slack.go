@@ -1,4 +1,4 @@
-package tagger
+package main
 
 // handles slack API interface for sending webhooks back with responses
 
@@ -98,11 +98,11 @@ const (
 )
 
 // PostSnippet - Post a snippet of any type to slack channel
-func PostSnippet(myBot MyBot, fileType string, fileContent string, channel string, title string) error {
+func PostSnippet(tagbot TagBot, fileType string, fileContent string, channel string, title string) error {
 
 	form := url.Values{}
 
-	form.Set("token", myBot.SlackToken)
+	form.Set("token", tagbot.SlackBotToken)
 	form.Set("channels", channel)
 	form.Set("content", fileContent)
 	form.Set("filetype", fileType)
@@ -113,19 +113,19 @@ func PostSnippet(myBot MyBot, fileType string, fileContent string, channel strin
 	req, err := http.NewRequest("POST", homeURL, strings.NewReader(s))
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Bearer "+myBot.SlackToken)
+	req.Header.Add("Authorization", "Bearer "+tagbot.SlackBotToken)
 
 	c := &http.Client{}
 	resp, err := c.Do(req)
 	if err != nil {
-		errTrap(myBot, "Slack PostSnippet - http.Do() error: ", err)
+		Logit("Slack PostSnippet - http.Do() error: ", false, "err")
 		return err
 	}
 	defer resp.Body.Close()
 
 	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		errTrap(myBot, "Slack PostSnippet - ioutil.ReadAll() error: ", err)
+		Logit("Slack PostSnippet - ioutil.ReadAll() error: ", false, "err")
 		return err
 	}
 
@@ -152,31 +152,31 @@ func Send(webhookURL string, proxy string, payload Payload) []error {
 }
 
 // WranglerDM - Send chat.Post API DM messages "as the bot"
-func WranglerDM(myBot MyBot, payload BotDMPayload) error {
+func WranglerDM(tagbot TagBot, payload BotDMPayload) error {
 	url := "https://slack.com/api/chat.postMessage"
 
-	payload.Token = myBot.SlackToken
+	payload.Token = tagbot.SlackBotToken
 	payload.AsUser = true
 
 	jsonStr, err := json.Marshal(&payload)
 	if err != nil {
-		errTrap(myBot, "Error attempting to marshal struct to json for slack BotDMPayload", err)
+		Logit("Error attempting to marshal struct to json for slack BotDMPayload", false, "err")
 		return err
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	if err != nil {
-		errTrap(myBot, "Error in http.NewRequest in `CreateList` in `trello.go`", err)
+		Logit("Error in http.NewRequest in `CreateList` in `trello.go`", false, "err")
 		return err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+myBot.SlackToken)
+	req.Header.Add("Authorization", "Bearer "+tagbot.SlackBotToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		errTrap(myBot, "Error in client.Do in `CreateList` in `trello.go`", err)
+		Logit("Error in client.Do in `CreateList` in `trello.go`", false, "err")
 		return err
 	}
 	defer resp.Body.Close()
@@ -200,38 +200,38 @@ func Wrangler(webhookURL string, message string, myChannel string, attachments A
 	}
 }
 
-//LogToSlack - Dump Logs to a Slack Channel
-func LogToSlack(message string, myBot MyBot, attachments Attachment) {
+// LogToSlack - Dump Logs to a Slack Channel
+func LogToSlack(message string, tagbot TagBot, attachments Attachment) {
 	now := time.Now().Local()
 	message = "*" + now.Format("01/02/2006 15:04:05") + " :* " + message
 
-	Wrangler(myBot.SlackHook, message, myBot.LogChannel, attachments)
+	Wrangler(tagbot.SlackHook, message, tagbot.LogChannel, attachments)
 }
 
 // AddReaction - add an emoji reaction to a message (expects proper ReactionPayload struct)
-func AddReaction(myBot MyBot, payload ReactionPayload) error {
+func AddReaction(tagbot TagBot, payload ReactionPayload) error {
 
-	payload.Token = myBot.SlackToken
+	payload.Token = tagbot.SlackBotToken
 
 	jsonStr, err := json.Marshal(&payload)
 	if err != nil {
-		errTrap(myBot, "Error attempting to marshal struct to json for slack AddReaction", err)
+		Logit("Error attempting to marshal struct to json for slack AddReaction", false, "err")
 		return err
 	}
 
 	req, err := http.NewRequest("POST", reactionAddURL, bytes.NewBuffer(jsonStr))
 	if err != nil {
-		errTrap(myBot, "Error in http.NewRequest in `AddReaction` in `slack.go`", err)
+		Logit("Error in http.NewRequest in `AddReaction` in `slack.go`", false, "err")
 		return err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+myBot.SlackToken)
+	req.Header.Add("Authorization", "Bearer "+tagbot.SlackBotToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		errTrap(myBot, "Error in client.Do in `CreateList` in `trello.go`", err)
+		Logit("Error in client.Do in `CreateList` in `trello.go`", false, "err")
 		return err
 	}
 	defer resp.Body.Close()

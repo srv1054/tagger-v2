@@ -1,4 +1,12 @@
 {
-	"logchannel": "#scott-channel-of-test",
-	"debug": false
+	"slackhook": "",
+	"slacktoken": "",
+	"botid": "",
+	"botname": "",
+	"teamid": "",
+	"teamname": "",
+	"logchannel": "",
+	"version": "",
+	"sprayjsonpath": "",
+	"debug": ""
 } 

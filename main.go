@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -13,33 +14,58 @@ import (
 )
 
 func main() {
-	//appToken := os.Getenv("SLACK_APP_TOKEN")
-	appToken := "xapp-1-A06H52MLWBG-6589737458690-2541edb40291f90774190d0aa7a8b83c51c7ecd2e50ed8e006e03d68f870e296"
-	if appToken == "" {
-		fmt.Fprintf(os.Stderr, "SLACK_APP_TOKEN must be set.\n")
+
+	var (
+		version = "0.0.5"
+	)
+
+	// deal with CLI
+	v := flag.Bool("v", false, "Show current version")
+	cp := flag.String("c", "", "Path to configuration file")
+	jp := flag.String("j", "", "Path to SprayCan JSON file")
+	flag.Parse()
+	if *v {
+		fmt.Println("Version: " + version)
+		fmt.Println("taggerbot is a slack bot that tags messages with emojis")
+		fmt.Println("github.com/srv1054/tagger")
+		os.Exit(0)
+	}
+
+	configPath := *cp
+	sprayPath := *jp
+
+	// Load JSON Configurations
+	TagBot, err := LoadBotConfig(configPath)
+	if err != nil {
+		os.Exit(1)
+	}
+	Spray, err := LoadSprayCans(sprayPath)
+	if err != nil {
 		os.Exit(1)
 	}
 
-	if !strings.HasPrefix(appToken, "xapp-") {
+	// Check for required variables
+	if TagBot.SlackAppToken == "" {
+		fmt.Fprintf(os.Stderr, "SLACK_APP_TOKEN must be set in config.json.\n")
+		os.Exit(1)
+	}
+	if !strings.HasPrefix(TagBot.SlackAppToken, "xapp-") {
 		fmt.Fprintf(os.Stderr, "SLACK_APP_TOKEN must have the prefix \"xapp-\".")
 	}
-
-	//botToken := os.Getenv("SLACK_BOT_TOKEN")
-	botToken := "xoxb-7611452182-6575197657847-Fb1WNSoy57ONYUDmANRoOq4Z"
-	if botToken == "" {
+	if TagBot.SlackBotToken == "" {
 		fmt.Fprintf(os.Stderr, "SLACK_BOT_TOKEN must be set.\n")
 		os.Exit(1)
 	}
-
-	if !strings.HasPrefix(botToken, "xoxb-") {
+	if !strings.HasPrefix(TagBot.SlackBotToken, "xoxb-") {
 		fmt.Fprintf(os.Stderr, "SLACK_BOT_TOKEN must have the prefix \"xoxb-\".")
 	}
 
+	// Start the bot
 	api := slack.New(
-		botToken,
+		TagBot.SlackBotToken,
 		slack.OptionDebug(true),
 		slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
-		slack.OptionAppLevelToken(appToken),
+		slack.OptionAppLevelToken(TagBot.SlackAppToken),
 	)
 
 	client := socketmode.New(
