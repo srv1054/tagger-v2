@@ -75,7 +75,7 @@ func main() {
 	// Start the bot
 	// Say Hello to slack logging if enabled
 	if TagBot.LogChannel != "" && TagBot.SlackHook != "" {
-		cans := len(SprayCans{})
+		cans := len(Spray)
 		Wrangler(TagBot.SlackHook, "Tagger `v"+version+"` is starting up", TagBot.LogChannel, attachment)
 		Wrangler(TagBot.SlackHook, strconv.Itoa(cans)+" Spray Cans loaded via tags.json", TagBot.LogChannel, attachment)
 	}
