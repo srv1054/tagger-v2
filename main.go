@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.2"
+		version = "1.0.3"
 
 		attachment Attachment
 	)
@@ -42,6 +42,12 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+	if sprayPath == "" {
+		if TagBot.SprayJSONPath == "" {
+			sprayPath = "tags.json"
+		} else {
+			sprayPath = TagBot.SprayJSONPath
+		}
 	Spray, err := LoadSprayCans(sprayPath)
 	if err != nil {
 		os.Exit(1)
@@ -66,13 +72,14 @@ func main() {
 	}
 
 	// Start the bot
-	// Say Hello to slack logging
+	// Say Hello to slack logging if enabled
 	if TagBot.LogChannel != "" && TagBot.SlackHook != "" {
 		cans := len(SprayCans{})
 		Wrangler(TagBot.SlackHook, "Tagger `v"+version+"` is starting up", TagBot.LogChannel, attachment)
 		Wrangler(TagBot.SlackHook, strconv.Itoa(cans)+" Spray Cans loaded via tags.json", TagBot.LogChannel, attachment)
 	}
 
+	// Setup Slack API
 	api := slack.New(
 		TagBot.SlackBotToken,
 		slack.OptionDebug(true),
@@ -80,6 +87,7 @@ func main() {
 		slack.OptionAppLevelToken(TagBot.SlackAppToken),
 	)
 
+	// Start Socket Mode
 	client := socketmode.New(
 		api,
 		socketmode.OptionDebug(true),
