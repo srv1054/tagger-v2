@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.3"
+		version = "1.0.4"
 
 		attachment Attachment
 	)

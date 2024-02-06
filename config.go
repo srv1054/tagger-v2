@@ -62,11 +62,13 @@ func LoadSprayCans(pathname string) (spray SprayCans, err error) {
 
 	if pathname == "" {
 		fileName = "tags.json"
+	} else {
+		fileName = pathname
 	}
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		Logit("Error opening tags.json file: "+err.Error(), true, "err")
+		Logit("Error opening "+fileName+"  "+err.Error(), true, "err")
 		return spray, err
 	}
 
