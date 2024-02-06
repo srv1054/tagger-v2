@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/slack-go/slack/socketmode"
@@ -16,7 +17,9 @@ import (
 func main() {
 
 	var (
-		version = "1.0.1"
+		version = "1.0.2"
+
+		attachment Attachment
 	)
 
 	// deal with CLI
@@ -63,6 +66,13 @@ func main() {
 	}
 
 	// Start the bot
+	// Say Hello to slack logging
+	if TagBot.LogChannel != "" && TagBot.SlackHook != "" {
+		cans := len(SprayCans{})
+		Wrangler(TagBot.SlackHook, "Tagger `v"+version+"` is starting up", TagBot.LogChannel, attachment)
+		Wrangler(TagBot.SlackHook, strconv.Itoa(cans)+" Spray Cans loaded via tags.json", TagBot.LogChannel, attachment)
+	}
+
 	api := slack.New(
 		TagBot.SlackBotToken,
 		slack.OptionDebug(true),
