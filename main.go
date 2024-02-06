@@ -48,6 +48,7 @@ func main() {
 		} else {
 			sprayPath = TagBot.SprayJSONPath
 		}
+	}
 	Spray, err := LoadSprayCans(sprayPath)
 	if err != nil {
 		os.Exit(1)
