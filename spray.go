@@ -9,7 +9,10 @@ import (
 func CheckTags(ev *slackevents.MessageEvent, tagbot TagBot, paint SprayCans) {
 
 	has, tags := cancontains(paint, strings.ToLower(ev.Text))
-	Logit("Evaluating: "+ev.Text, false, "info")
+	if tagbot.Debug {
+		// This generates a lot of logs!!!
+		Logit("Evaluating: "+ev.Text, false, "info")
+	}
 
 	if has {
 		var payload ReactionPayload
