@@ -6,11 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
-	"strings"
-	"time"
 
 	"github.com/parnurzeal/gorequest"
 )
@@ -82,6 +78,10 @@ type ReactionPayload struct {
 	TimeStamp string `json:"timestamp"`
 }
 
+const (
+	reactionAddURL string = "https://slack.com/api/reactions.add"
+)
+
 // AddField - add fields
 func (attachment *Attachment) AddField(field Field) *Attachment {
 	attachment.Fields = append(attachment.Fields, &field)
@@ -90,46 +90,6 @@ func (attachment *Attachment) AddField(field Field) *Attachment {
 
 func redirectPolicyFunc(req gorequest.Request, via []gorequest.Request) error {
 	return fmt.Errorf("Incorrect token (redirection)")
-}
-
-const (
-	homeURL        string = "https://slack.com/api/files.upload"
-	reactionAddURL string = "https://slack.com/api/reactions.add"
-)
-
-// PostSnippet - Post a snippet of any type to slack channel
-func PostSnippet(tagbot TagBot, fileType string, fileContent string, channel string, title string) error {
-
-	form := url.Values{}
-
-	form.Set("token", tagbot.SlackBotToken)
-	form.Set("channels", channel)
-	form.Set("content", fileContent)
-	form.Set("filetype", fileType)
-	form.Set("title", title)
-
-	s := form.Encode()
-
-	req, err := http.NewRequest("POST", homeURL, strings.NewReader(s))
-
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Bearer "+tagbot.SlackBotToken)
-
-	c := &http.Client{}
-	resp, err := c.Do(req)
-	if err != nil {
-		Logit("Slack PostSnippet - http.Do() error: ", false, "err")
-		return err
-	}
-	defer resp.Body.Close()
-
-	_, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		Logit("Slack PostSnippet - ioutil.ReadAll() error: ", false, "err")
-		return err
-	}
-
-	return nil
 }
 
 // Send - send message
@@ -151,40 +111,7 @@ func Send(webhookURL string, proxy string, payload Payload) []error {
 	return nil
 }
 
-// WranglerDM - Send chat.Post API DM messages "as the bot"
-func WranglerDM(tagbot TagBot, payload BotDMPayload) error {
-	url := "https://slack.com/api/chat.postMessage"
-
-	payload.Token = tagbot.SlackBotToken
-	payload.AsUser = true
-
-	jsonStr, err := json.Marshal(&payload)
-	if err != nil {
-		Logit("Error attempting to marshal struct to json for slack BotDMPayload", false, "err")
-		return err
-	}
-
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-	if err != nil {
-		Logit("Error in http.NewRequest in `CreateList` in `trello.go`", false, "err")
-		return err
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+tagbot.SlackBotToken)
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		Logit("Error in client.Do in `CreateList` in `trello.go`", false, "err")
-		return err
-	}
-	defer resp.Body.Close()
-	return err
-
-}
-
-// Wrangler - wrangle slack calls
+// Wrangler - wrangle slack webhook calls
 func Wrangler(webhookURL string, message string, myChannel string, attachments Attachment) {
 
 	payload := Payload{
@@ -198,14 +125,6 @@ func Wrangler(webhookURL string, message string, myChannel string, attachments A
 	if len(err) > 0 {
 		fmt.Printf("Slack Messaging Error in Wrangler function in slack.go: %s\n", err)
 	}
-}
-
-// LogToSlack - Dump Logs to a Slack Channel
-func LogToSlack(message string, tagbot TagBot, attachments Attachment) {
-	now := time.Now().Local()
-	message = "*" + now.Format("01/02/2006 15:04:05") + " :* " + message
-
-	Wrangler(tagbot.SlackHook, message, tagbot.LogChannel, attachments)
 }
 
 // AddReaction - add an emoji reaction to a message (expects proper ReactionPayload struct)
