@@ -98,7 +98,7 @@ func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, tagbot TagB
 		}
 
 		payload.Text = hmessage
-		payload.Channel = ev.Channel
+		payload.Channel = ev.User
 		attachments.Color = "#00ff00"
 		attachments.Text = message
 		payload.Attachments = append(payload.Attachments, attachments)

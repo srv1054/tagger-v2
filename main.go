@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.9"
+		version = "1.0.10"
 
 		attachment Attachment
 	)
@@ -138,7 +138,11 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("list spray cans")) {
-							err := ListSprayCans(ev, Spray, TagBot, client)
+							_, _, err := client.PostMessage(ev.User, slack.MsgOptionText("DM'ing you a list of available Spray Cans (Tags)!", false))
+							if err != nil {
+								Logit("failed posting message: "+err.Error(), false, "err")
+							}
+							err = ListSprayCans(ev, Spray, TagBot, client)
 							if err != nil {
 								Logit("Error listing tags: "+err.Error(), false, "err")
 							}
@@ -168,6 +172,10 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("help")) {
+							_, _, err := client.PostMessage(ev.User, slack.MsgOptionText("DM'ing you some help!", false))
+							if err != nil {
+								Logit("failed posting message: "+err.Error(), false, "err")
+							}
 							SendHelp(ev.User, TagBot, client)
 						}
 
@@ -204,14 +212,15 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 			},
 			{
 				Title: "Commands",
-				Value: "x@xxxxxxxxx help` - Get help\n`@taggerbot list tags` - List all tags\n`@taggerbot add tag` - Add a tag\n`@taggerbot delete tag` - Delete a tag\n`@taggerbot reload tags` - Reload tags.json",
+				Value: "@tagger help` - Get help\n`@taggerbot list spray cans` - List all tags\n`@taggerbot add spray can` - Add a tag\n`@taggerbot delete spray can` - Delete a tag\n`@taggerbot reload spray cans` - Reload tags.json",
+				Short: false,
+			},
+			{
+				Title: "",
+				Value: "`@taggerbot add word` - Add keyword to a spray can (tag)\n`@taggerbot delete word` - Delete a spray can (tag)",
 				Short: false,
 			},
 		},
 	}
-	Wrangler(TagBot.SlackHook, "Sending help to "+user, TagBot.LogChannel, attachment)
-	_, _, err := client.PostMessage(user, slack.MsgOptionText("Here is some help!", false))
-	if err != nil {
-		Logit("failed posting message: "+err.Error(), false, "err")
-	}
+	Wrangler(TagBot.SlackHook, "Sending help to "+user, user, attachment)
 }
