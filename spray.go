@@ -114,3 +114,28 @@ func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, tagbot TagB
 
 	return nil
 }
+
+// SendHelp - send help to a user @tagger help
+func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
+	attachment := Attachment{
+		Color: "#36a64f",
+		Fields: []*Field{
+			{
+				Title: "TaggerBot Help",
+				Value: "TaggerBot is a Slack bot that tags messages with emojis",
+				Short: false,
+			},
+			{
+				Title: "Commands",
+				Value: "@tagger help` - Get help\n`@taggerbot list spray cans` - List all tags\n`@taggerbot add spray can` - Add a tag\n`@taggerbot delete spray can` - Delete a tag\n`@taggerbot reload spray cans` - Reload tags.json",
+				Short: false,
+			},
+			{
+				Title: "",
+				Value: "`@taggerbot add word` - Add keyword to a spray can (tag)\n`@taggerbot delete word` - Delete a spray can (tag)",
+				Short: false,
+			},
+		},
+	}
+	Wrangler(TagBot.SlackHook, "Here's what I can do! ", user, attachment)
+}
