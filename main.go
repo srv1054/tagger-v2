@@ -137,36 +137,31 @@ func main() {
 								Logit("failed posting message: "+err.Error(), false, "err")
 							}
 						}
-						if strings.Contains(ev.Text, strings.ToLower("list tags")) {
-							// Look in old tagger to see how I formatted the list of tags
-							err := ListSprayCans(ev.Channel, Spray, TagBot, client)
+						if strings.Contains(ev.Text, strings.ToLower("list spray cans")) {
+							err := ListSprayCans(ev, Spray, TagBot, client)
 							if err != nil {
 								Logit("Error listing tags: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add spray can")) {
-							// Add a spray can
 							err := AddSprayCan(ev.Text, Spray)
 							if err != nil {
 								Logit("Error adding spray can: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
-							// Delete a spray can
 							err := DeleteSprayCan(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting spray can: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add word")) {
-							// Add a word to a spray can
 							err := AddWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error adding word: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
-							// Delete a word from a spray can
 							err := DeleteWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting word: "+err.Error(), false, "err")

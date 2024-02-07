@@ -80,7 +80,37 @@ func DeleteWord(e string, paint SprayCans) error {
 }
 
 // ListTags - lists all the spray cans and their words
-func ListSprayCans(channel string, paint SprayCans, tagbot TagBot, client *socketmode.Client) error {
-	// ListTags(ev.Channel, Spray, TagBot, client)
+func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, tagbot TagBot, client *socketmode.Client) error {
+
+	var (
+		payload     BotDMPayload
+		message     string = ""
+		hmessage    string = ""
+		attachments Attachment
+	)
+
+	payload.Attachments = nil
+
+	for _, p := range paint {
+		hmessage = "Keywords for tag :" + p.Spray + ":\n"
+		for _, w := range p.Words {
+			message = message + w + "\n"
+		}
+
+		payload.Text = hmessage
+		payload.Channel = ev.Channel
+		attachments.Color = "#00ff00"
+		attachments.Text = message
+		payload.Attachments = append(payload.Attachments, attachments)
+
+		err := WranglerDM(tagbot, payload)
+		if err != nil {
+			return err
+		}
+
+		message = ""
+		payload.Attachments = nil
+	}
+
 	return nil
 }

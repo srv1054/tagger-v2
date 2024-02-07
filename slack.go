@@ -127,6 +127,40 @@ func Wrangler(webhookURL string, message string, myChannel string, attachments A
 	}
 }
 
+// WranglerDM - Send chat.Post API DM messages "as the bot"
+func WranglerDM(myBot TagBot, payload BotDMPayload) error {
+	url := "https://slack.com/api/chat.postMessage"
+
+	payload.Token = myBot.SlackBotToken
+	payload.AsUser = true
+
+	jsonStr, err := json.Marshal(&payload)
+	if err != nil {
+		Logit("error attempting to marshal struct to json for slack BotDMPayload: "+err.Error(), false, "err")
+		return err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		Logit("error in http.NewRequest in WranglerDM Func: "+err.Error(), false, "err")
+		return err
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Bearer "+myBot.SlackBotToken)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		Logit("error in client.Do in WranglerDM: "+err.Error(), false, "err")
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	return err
+}
+
 // AddReaction - add an emoji reaction to a message (expects proper ReactionPayload struct)
 func AddReaction(tagbot TagBot, payload ReactionPayload) error {
 
