@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.10"
+		version = "1.0.12"
 
 		attachment Attachment
 	)
@@ -138,7 +138,7 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("list spray cans")) {
-							_, _, err := client.PostMessage(ev.User, slack.MsgOptionText("DM'ing you a list of available Spray Cans (Tags)!", false))
+							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("DM'ing you a list of available Spray Cans (Tags)!", false))
 							if err != nil {
 								Logit("failed posting message: "+err.Error(), false, "err")
 							}

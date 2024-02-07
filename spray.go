@@ -80,7 +80,7 @@ func DeleteWord(e string, paint SprayCans) error {
 }
 
 // ListTags - lists all the spray cans and their words
-func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, tagbot TagBot, client *socketmode.Client) error {
+func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, TagBot TagBot, client *socketmode.Client) error {
 
 	var (
 		payload     BotDMPayload
@@ -103,7 +103,7 @@ func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, tagbot TagB
 		attachments.Text = message
 		payload.Attachments = append(payload.Attachments, attachments)
 
-		err := WranglerDM(tagbot, payload)
+		err := WranglerDM(TagBot, payload)
 		if err != nil {
 			return err
 		}
@@ -117,7 +117,16 @@ func ListSprayCans(ev *slackevents.AppMentionEvent, paint SprayCans, tagbot TagB
 
 // SendHelp - send help to a user @tagger help
 func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
-	attachment := Attachment{
+
+	var (
+		payload    BotDMPayload
+		attachment Attachment
+	)
+
+	payload.Text = ""
+	payload.Channel = user
+
+	attachment = Attachment{
 		Color: "#36a64f",
 		Fields: []*Field{
 			{
@@ -137,5 +146,8 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 			},
 		},
 	}
-	Wrangler(TagBot.SlackHook, "Here's what I can do! ", user, attachment)
+	payload.Attachments = append(payload.Attachments, attachment)
+
+	_ = WranglerDM(TagBot, payload)
+
 }
