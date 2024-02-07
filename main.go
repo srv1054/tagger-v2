@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.12"
+		version = "1.1.02"
 
 		attachment Attachment
 	)
@@ -157,16 +157,20 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add spray can")) {
-							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
-							err := AddSprayCan(ev.Text, Spray)
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
+							success, err := AddSprayCan(ev.Text, Spray, TagBot)
 							if err != nil {
 								Logit("Error adding spray can: "+err.Error(), false, "err")
+							}
+							if !success {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add spray can. See logs.", false))
+							} else {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Spray Can added!", false))
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
 							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							err := DeleteSprayCan(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting spray can: "+err.Error(), false, "err")
@@ -174,7 +178,7 @@ func main() {
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add word")) {
 							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							err := AddWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error adding word: "+err.Error(), false, "err")
@@ -182,7 +186,7 @@ func main() {
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
 							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							err := DeleteWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting word: "+err.Error(), false, "err")
@@ -190,7 +194,7 @@ func main() {
 						}
 						if strings.Contains(ev.Text, strings.ToLower("help")) {
 							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("DM'ing you some help!", false))
 							if err != nil {
 								Logit("failed posting message: "+err.Error(), false, "err")

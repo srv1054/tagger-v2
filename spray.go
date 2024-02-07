@@ -52,10 +52,41 @@ func cancontains(paint SprayCans, e string) (has bool, sprayArray []string) {
 }
 
 // AddSprayCan - adds a spray can to the JSON
-func AddSprayCan(e string, paint SprayCans) error {
-	// Add a spray can
-	// AddSprayCan(ev.Text, Spray)
-	return nil
+func AddSprayCan(e string, paint SprayCans, TagBot TagBot) (success bool, err error) {
+	var (
+		exists bool
+	)
+
+	// check if spray can already exists
+	for _, sc := range paint {
+		if sc.Spray == e {
+			exists = true
+			break
+		}
+	}
+
+	if exists {
+		return false, nil
+	}
+
+	// check slack to see if emoji exists???
+
+	// Add e to spray cans
+	paint = append(paint, struct {
+		Spray string   `json:"spray"`
+		Words []string `json:"words"`
+	}{
+		Spray: e,
+		Words: nil,
+	})
+
+	// json marshal and write to file
+	err = WriteJSONTagsFile(TagBot.SprayJSONPath, paint)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // DeleteSprayCan - deletes a spray can from the JSON
@@ -147,6 +178,21 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 		},
 	}
 	payload.Attachments = append(payload.Attachments, attachment)
+	attachment = Attachment{
+		Color: "#935DFF",
+		Fields: []*Field{
+			{
+				Title: "Specifics for Adding Words to Spray Cans",
+				Value: "@taggerbot add word <Spray Can> <new word>\ne.g.: @taggerbot add word smile happyness\nThe <Spray Can> must exist as a real slack emoji.",
+				Short: false,
+			},
+			{
+				Title: "Specifics for Adding new Spray Cans",
+				Value: "@taggerbot add spray can <emoji name (no colons)>\ne.g.: @taggerbot add spray can catwave\nThe <emoji name> must exist as a real slack emoji.",
+				Short: false,
+			},
+		},
+	}
 
 	_ = WranglerDM(TagBot, payload)
 

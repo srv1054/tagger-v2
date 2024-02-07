@@ -83,3 +83,29 @@ func LoadSprayCans(pathname string) (spray SprayCans, err error) {
 
 	return spray, nil
 }
+
+// WriteTagsFile - Write tag.json tagger data file
+func WriteTagsFile(pathname string, spray SprayCans) error {
+	var fileName string
+
+	if pathname == "" {
+		fileName = "tags.json"
+	} else {
+		fileName = pathname
+	}
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		Logit("Error creating "+fileName+"  "+err.Error(), true, "err")
+		return err
+	}
+
+	encoded := json.NewEncoder(file)
+	err = encoded.Encode(spray)
+	if err != nil {
+		Logit("Error writing "+fileName+"  "+err.Error(), true, "err")
+		return err
+	}
+
+	return nil
+}
