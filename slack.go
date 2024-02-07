@@ -89,7 +89,7 @@ func (attachment *Attachment) AddField(field Field) *Attachment {
 }
 
 func redirectPolicyFunc(req gorequest.Request, via []gorequest.Request) error {
-	return fmt.Errorf("Incorrect token (redirection)")
+	return fmt.Errorf("incorrect token (redirection)")
 }
 
 // Send - send message
@@ -105,7 +105,7 @@ func Send(webhookURL string, proxy string, payload Payload) []error {
 		return err
 	}
 	if resp.StatusCode >= 400 {
-		return []error{fmt.Errorf("Error sending msg. Status: %v", resp.Status)}
+		return []error{fmt.Errorf("error sending msg. Status: %v", resp.Status)}
 	}
 
 	return nil

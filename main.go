@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.0.7"
+		version = "1.0.9"
 
 		attachment Attachment
 	)
@@ -131,14 +131,52 @@ func main() {
 					// Handle direct messages to the Bot Name Mention
 					case *slackevents.AppMentionEvent:
 						if strings.Contains(ev.Text, strings.ToLower("reload tags")) {
-							Spray, err = LoadSprayCans(sprayPath)
+							Spray, err = LoadSprayCans(TagBot.SprayJSONPath)
 							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Sure, I have reloaded your tags.json file.", false))
 							if err != nil {
-								fmt.Printf("failed posting message: %v", err)
+								Logit("failed posting message: "+err.Error(), false, "err")
 							}
 						}
+						if strings.Contains(ev.Text, strings.ToLower("list tags")) {
+							// Look in old tagger to see how I formatted the list of tags
+							err := ListSprayCans(ev.Channel, Spray, TagBot, client)
+							if err != nil {
+								Logit("Error listing tags: "+err.Error(), false, "err")
+							}
+						}
+						if strings.Contains(ev.Text, strings.ToLower("add spray can")) {
+							// Add a spray can
+							err := AddSprayCan(ev.Text, Spray)
+							if err != nil {
+								Logit("Error adding spray can: "+err.Error(), false, "err")
+							}
+						}
+						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
+							// Delete a spray can
+							err := DeleteSprayCan(ev.Text, Spray)
+							if err != nil {
+								Logit("Error deleting spray can: "+err.Error(), false, "err")
+							}
+						}
+						if strings.Contains(ev.Text, strings.ToLower("add word")) {
+							// Add a word to a spray can
+							err := AddWord(ev.Text, Spray)
+							if err != nil {
+								Logit("Error adding word: "+err.Error(), false, "err")
+							}
+						}
+						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
+							// Delete a word from a spray can
+							err := DeleteWord(ev.Text, Spray)
+							if err != nil {
+								Logit("Error deleting word: "+err.Error(), false, "err")
+							}
+						}
+						if strings.Contains(ev.Text, strings.ToLower("help")) {
+							SendHelp(ev.User, TagBot, client)
+						}
 
-					// check messages for option to tag them
+					// Check messages for option to tag them
 					case *slackevents.MessageEvent:
 						if TagBot.Debug {
 							fmt.Printf("%v", ev)
@@ -157,4 +195,28 @@ func main() {
 	}()
 
 	client.Run()
+}
+
+// SendHelp - send help to a user @tagger help
+func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
+	attachment := Attachment{
+		Color: "#36a64f",
+		Fields: []*Field{
+			{
+				Title: "TaggerBot Help",
+				Value: "TaggerBot is a Slack bot that tags messages with emojis",
+				Short: false,
+			},
+			{
+				Title: "Commands",
+				Value: "x@xxxxxxxxx help` - Get help\n`@taggerbot list tags` - List all tags\n`@taggerbot add tag` - Add a tag\n`@taggerbot delete tag` - Delete a tag\n`@taggerbot reload tags` - Reload tags.json",
+				Short: false,
+			},
+		},
+	}
+	Wrangler(TagBot.SlackHook, "Sending help to "+user, TagBot.LogChannel, attachment)
+	_, _, err := client.PostMessage(user, slack.MsgOptionText("Here is some help!", false))
+	if err != nil {
+		Logit("failed posting message: "+err.Error(), false, "err")
+	}
 }
