@@ -129,6 +129,15 @@ func main() {
 					switch ev := innerEvent.Data.(type) {
 
 					// Handle direct messages to the Bot Name Mention
+					/*
+						[x] - reload tags
+						[x] - list spray cans
+						[ ] - add spray can
+						[ ] - delete spray can
+						[ ] - add word
+						[ ] - delete word
+						[x] - help
+					*/
 					case *slackevents.AppMentionEvent:
 						if strings.Contains(ev.Text, strings.ToLower("reload tags")) {
 							Spray, err = LoadSprayCans(TagBot.SprayJSONPath)
@@ -148,30 +157,40 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add spray can")) {
+							// Temp message, not implemented yet
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
 							err := AddSprayCan(ev.Text, Spray)
 							if err != nil {
 								Logit("Error adding spray can: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
+							// Temp message, not implemented yet
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
 							err := DeleteSprayCan(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting spray can: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add word")) {
+							// Temp message, not implemented yet
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
 							err := AddWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error adding word: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
+							// Temp message, not implemented yet
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
 							err := DeleteWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting word: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("help")) {
+							// Temp message, not implemented yet
+							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("Not implemented yet!", false))
 							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("DM'ing you some help!", false))
 							if err != nil {
 								Logit("failed posting message: "+err.Error(), false, "err")
