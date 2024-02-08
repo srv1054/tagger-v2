@@ -52,7 +52,8 @@ func cancontains(paint SprayCans, e string) (has bool, sprayArray []string) {
 }
 
 // AddSprayCan - adds a spray can to the JSON
-func AddSprayCan(e string, paint SprayCans, TagBot TagBot) (success bool, err error) {
+func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client) (success bool, msg string) {
+
 	var (
 		exists bool
 	)
@@ -66,10 +67,13 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot) (success bool, err er
 	}
 
 	if exists {
-		return false, nil
+		return false, "Spray Can " + e + " already exists!"
 	}
 
-	// check slack to see if emoji exists???
+	// Check slack to see if emoji exists???
+	if !ScanEmojiList(e, client) {
+		return false, "Emoji " + e + " does not exist in the server!"
+	}
 
 	// Add e to spray cans
 	paint = append(paint, struct {
@@ -81,12 +85,12 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot) (success bool, err er
 	})
 
 	// json marshal and write to file
-	err = WriteJSONTagsFile(TagBot.SprayJSONPath, paint)
+	err := WriteJSONTagsFile(TagBot.SprayJSONPath, paint)
 	if err != nil {
-		return false, err
+		return false, "Error writing to tags.json: " + err.Error()
 	}
 
-	return true, nil
+	return true, "Spray Can " + e + " added!"
 }
 
 // DeleteSprayCan - deletes a spray can from the JSON
@@ -197,4 +201,18 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 
 	_ = WranglerDM(TagBot, payload)
 
+}
+
+// ScanEmojiList - Find an emoji in the server master emoji list
+func ScanEmojiList(emoji string, client *socketmode.Client) bool {
+
+	ServerEmojiList, _ := client.GetEmoji()
+
+	for key, _ := range ServerEmojiList {
+		if key == emoji {
+			return true
+		}
+	}
+
+	return false
 }
