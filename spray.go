@@ -98,20 +98,64 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cl
 		return false, "Error writing to tags.json: " + err.Error()
 	}
 
+	Logit("Spray Can `"+e+"` added to tags.json", false, "info")
 	return true, "Spray Can `" + e + "` added!\nNow add some key words!"
+}
+
+// AddWord - adds a word to a spray can
+func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client) (success bool, msg string) {
+
+	var (
+		exists   bool = false
+		sprayCan string
+		word     string
+	)
+
+	// break down "e" into the word requested
+	tmp := strings.Split(e, " ")
+	if len(tmp) < 5 {
+		return false, "Invalid command. Use `@tagger add word <spray can> \"<word>\"`"
+	} else {
+		sprayCan = tmp[3]
+		// remove the quotes from the word
+		word = strings.Trim(tmp[4], "\"")
+	}
+
+	// find the specified spray can and then validate the word doens't already exist
+	for _, sc := range paint {
+		if sc.Spray == sprayCan {
+			for _, w := range sc.Words {
+				if w == word {
+					exists = true
+				}
+			}
+		}
+	}
+	if exists {
+		return false, "The word `" + word + "` already exists in Spray Can `" + sprayCan + "`!"
+	}
+
+	// Add word to spray can
+	for i, sc := range paint {
+		if sc.Spray == sprayCan {
+			paint[i].Words = append(paint[i].Words, word)
+		}
+	}
+
+	// json marshal and write to file
+	err := WriteJSONTagsFile(TagBot.SprayJSONPath, paint)
+	if err != nil {
+		return false, "Error writing to tags.json: " + err.Error()
+	}
+
+	Logit("Word `"+word+"` added to Spray Can `"+sprayCan+"` in tags.json", false, "info")
+	return true, "Word `" + word + "` added to Spray Can `" + sprayCan + "`!"
 }
 
 // DeleteSprayCan - deletes a spray can from the JSON
 func DeleteSprayCan(e string, paint SprayCans) error {
 	// Delete a spray can
 	// DeleteSprayCan(ev.Text, Spray)
-	return nil
-}
-
-// AddWord - adds a word to a spray can
-func AddWord(e string, paint SprayCans) error {
-	// Add a word to a spray can
-	// AddWord(ev.Text, Spray)
 	return nil
 }
 
@@ -184,7 +228,7 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 			},
 			{
 				Title: "",
-				Value: "`@tagger add word` - Add keyword to a spray can (tag)\n`@tagger delete word` - Delete a spray can (tag)",
+				Value: "`@tagger add spray word` - Add keyword to a spray can (tag)\nYou must specify an existing Spray Can\nWord *must* be in \"\" quotation marks to allow for spaces.\n`@tagger delete word` - Delete a spray can (tag)",
 				Short: false,
 			},
 		},

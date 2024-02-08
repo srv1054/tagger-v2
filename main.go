@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.1.05"
+		version = "1.2.0"
 
 		attachment Attachment
 	)
@@ -141,6 +141,7 @@ func main() {
 					case *slackevents.AppMentionEvent:
 						if strings.Contains(ev.Text, strings.ToLower("reload tags")) {
 							Spray, err = LoadSprayCans(TagBot.SprayJSONPath)
+							Logit("Reloading tags.json", false, "info")
 							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Sure, I have reloaded your tags.json file.", false))
 							if err != nil {
 								Logit("failed posting message: "+err.Error(), false, "err")
@@ -166,33 +167,33 @@ func main() {
 								Spray, _ = LoadSprayCans(TagBot.SprayJSONPath)
 							}
 						}
+						if strings.Contains(ev.Text, strings.ToLower("add word")) {
+							success, msg := AddWord(ev.Text, Spray, TagBot, client)
+							if !success {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add new word to spray can.\n"+msg, false))
+							} else {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText(msg, false))
+								// Reload tags that were written to JSON file
+								Spray, _ = LoadSprayCans(TagBot.SprayJSONPath)
+							}
+						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
 							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
+							_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
 							err := DeleteSprayCan(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting spray can: "+err.Error(), false, "err")
 							}
 						}
-						if strings.Contains(ev.Text, strings.ToLower("add word")) {
-							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
-							err := AddWord(ev.Text, Spray)
-							if err != nil {
-								Logit("Error adding word: "+err.Error(), false, "err")
-							}
-						}
 						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
 							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
+							_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
 							err := DeleteWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting word: "+err.Error(), false, "err")
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("help")) {
-							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("DM'ing you some help!", false))
 							if err != nil {
 								Logit("failed posting message: "+err.Error(), false, "err")
@@ -200,7 +201,7 @@ func main() {
 							SendHelp(ev.User, TagBot, client)
 						}
 
-					// Check messages for option to tag them
+					// Check messages for option to tag them with a spray can
 					case *slackevents.MessageEvent:
 						if TagBot.Debug {
 							fmt.Printf("%v", ev)
