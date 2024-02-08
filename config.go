@@ -84,8 +84,8 @@ func LoadSprayCans(pathname string) (spray SprayCans, err error) {
 	return spray, nil
 }
 
-// WriteTagsFile - Write tag.json tagger data file
-func WriteTagsFile(pathname string, spray SprayCans) error {
+// WriteJSONTagsFile - Write tag.json tagger data file
+func WriteJSONTagsFile(pathname string, spray SprayCans) error {
 	var fileName string
 
 	if pathname == "" {
