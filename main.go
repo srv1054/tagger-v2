@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.1.03"
+		version = "1.1.04"
 
 		attachment Attachment
 	)
@@ -157,7 +157,7 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add spray can")) {
-							_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
+							//_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							success, msg := AddSprayCan(ev.Text, Spray, TagBot, client)
 							if !success {
 								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add spray can.\n"+msg, false))

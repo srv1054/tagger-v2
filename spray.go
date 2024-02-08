@@ -58,6 +58,14 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cl
 		exists bool
 	)
 
+	// break down "e" into the spray can requested
+	tmp := strings.Split(e, " ")
+	if len(tmp) < 5 {
+		return false, "Invalid command. Use `@tagger add spray can <emoji name (no colons)>`"
+	} else {
+		e = tmp[4]
+	}
+
 	// check if spray can already exists
 	for _, sc := range paint {
 		if sc.Spray == e {
@@ -165,18 +173,18 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 		Color: "#36a64f",
 		Fields: []*Field{
 			{
-				Title: "TaggerBot Help",
-				Value: "TaggerBot is a Slack bot that tags messages with emojis",
+				Title: "tagger Help",
+				Value: "tagger is a Slack bot that tags messages with emojis",
 				Short: false,
 			},
 			{
 				Title: "Commands",
-				Value: "@tagger help` - Get help\n`@taggerbot list spray cans` - List all tags\n`@taggerbot add spray can` - Add a tag\n`@taggerbot delete spray can` - Delete a tag\n`@taggerbot reload spray cans` - Reload tags.json",
+				Value: "@tagger help` - Get help\n`@tagger list spray cans` - List all tags\n`@tagger add spray can` - Add a tag\n`@tagger delete spray can` - Delete a tag\n`@tagger reload spray cans` - Reload tags.json",
 				Short: false,
 			},
 			{
 				Title: "",
-				Value: "`@taggerbot add word` - Add keyword to a spray can (tag)\n`@taggerbot delete word` - Delete a spray can (tag)",
+				Value: "`@tagger add word` - Add keyword to a spray can (tag)\n`@tagger delete word` - Delete a spray can (tag)",
 				Short: false,
 			},
 		},
@@ -187,12 +195,12 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 		Fields: []*Field{
 			{
 				Title: "Specifics for Adding Words to Spray Cans",
-				Value: "@taggerbot add word <Spray Can> <new word>\ne.g.: @taggerbot add word smile happyness\nThe <Spray Can> must exist as a real slack emoji.",
+				Value: "`@tagger add word <Spray Can> <new word>`\ne.g.: `@taggerbot add word smile happyness`\nThe <Spray Can> must exist as a real slack emoji.",
 				Short: false,
 			},
 			{
 				Title: "Specifics for Adding new Spray Cans",
-				Value: "@taggerbot add spray can <emoji name (no colons)>\ne.g.: @taggerbot add spray can catwave\nThe <emoji name> must exist as a real slack emoji.",
+				Value: "`@tagger add spray can <emoji name (no colons)>`\ne.g.: `@taggerbot add spray can catwave`\nThe <emoji name> must exist as a real slack emoji.",
 				Short: false,
 			},
 		},
