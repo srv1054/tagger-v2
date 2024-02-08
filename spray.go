@@ -193,6 +193,7 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 			},
 		},
 	}
+	payload.Attachments = append(payload.Attachments, attachment)
 
 	_ = WranglerDM(TagBot, payload)
 
