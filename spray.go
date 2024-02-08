@@ -55,7 +55,7 @@ func cancontains(paint SprayCans, e string) (has bool, sprayArray []string) {
 func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client) (success bool, msg string) {
 
 	var (
-		exists bool
+		exists bool = false
 	)
 
 	// break down "e" into the spray can requested
@@ -70,17 +70,15 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cl
 	for _, sc := range paint {
 		if sc.Spray == e {
 			exists = true
-			break
 		}
 	}
-
 	if exists {
 		return false, "Spray Can " + e + " already exists!"
 	}
 
 	// Check slack to see if emoji exists???
 	if !ScanEmojiList(e, client) {
-		return false, "Emoji " + e + " does not exist in the server!"
+		return false, "Emoji " + e + " does not exist on the server!"
 	}
 
 	// Add e to spray cans
@@ -98,7 +96,7 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cl
 		return false, "Error writing to tags.json: " + err.Error()
 	}
 
-	return true, "Spray Can " + e + " added!"
+	return true, "Spray Can `" + e + "` added!\nNow add some key words!"
 }
 
 // DeleteSprayCan - deletes a spray can from the JSON

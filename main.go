@@ -132,7 +132,7 @@ func main() {
 					/*
 						[x] - reload tags
 						[x] - list spray cans
-						[ ] - add spray can
+						[x] - add spray can
 						[ ] - delete spray can
 						[ ] - add word
 						[ ] - delete word
@@ -157,12 +157,13 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("add spray can")) {
-							//_, _, _ = client.PostMessage(ev.User, slack.MsgOptionText("You do not have permissions to do this!", false))
 							success, msg := AddSprayCan(ev.Text, Spray, TagBot, client)
 							if !success {
 								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add spray can.\n"+msg, false))
 							} else {
-								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Spray Can added!", false))
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText(msg, false))
+								// Reload tags that were written to JSON file
+								Spray, _ = LoadSprayCans(TagBot.SprayJSONPath)
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
