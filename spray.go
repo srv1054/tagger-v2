@@ -76,10 +76,12 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cl
 		return false, "Spray Can " + e + " already exists!"
 	}
 
-	// Check slack to see if emoji exists???
-	if !ScanEmojiList(e, client) {
-		return false, "Emoji " + e + " does not exist on the server!"
-	}
+	// Check slack to see if emoji exists
+	// This feature does work, however the Slack API does NOT return emojis that are "built-in" to the server, only custom user emojis
+	// This is a limitation of the Slack API, so this feature is commented out for now
+	//if !ScanEmojiList(e, client) {
+	//return false, "Emoji `" + e + "` does not exist on the server!"
+	//}
 
 	// Add e to spray cans
 	paint = append(paint, struct {
