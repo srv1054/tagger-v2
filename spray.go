@@ -208,7 +208,7 @@ func ScanEmojiList(emoji string, client *socketmode.Client) bool {
 
 	ServerEmojiList, _ := client.GetEmoji()
 
-	for key, _ := range ServerEmojiList {
+	for key := range ServerEmojiList {
 		if key == emoji {
 			return true
 		}
