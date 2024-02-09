@@ -278,16 +278,14 @@ func DeleteWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cli
 		}
 	}
 
-	/* Validation
-	Check that we aren't removing blanks or empty strings
-	*/
+	/* Validation*/
+	// Check that we aren't removing blanks or empty strings
 	if word == "" {
 		return false, "Word cannot be blank!"
 	}
 	if ContainsOnlySpaces(word) {
 		return false, "Word cannot be all spaces!"
 	}
-
 	// Check if the spray can exists
 	exists = false
 	for _, sc := range paint {
@@ -297,6 +295,20 @@ func DeleteWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cli
 	}
 	if !exists {
 		return false, "Spray Can `" + sprayCan + "` does not exist!"
+	}
+	// Check if the word exists in the spray can
+	exists = false
+	for _, sc := range paint {
+		if sc.Spray == sprayCan {
+			for _, w := range sc.Words {
+				if w == word {
+					exists = true
+				}
+			}
+		}
+	}
+	if !exists {
+		return false, "Word `" + word + "` does not exist in Spray Can `" + sprayCan + "`!"
 	}
 
 	// Remove the word from the spray can
