@@ -111,6 +111,7 @@ func LoadSprayCans(pathname string) (spray SprayCans, err error) {
 }
 
 // WriteJSONTagsFile - Write tag.json tagger data file
+// Redo this function with json pretty print
 func WriteJSONTagsFile(pathname string, spray SprayCans) error {
 	var fileName string
 
@@ -127,6 +128,7 @@ func WriteJSONTagsFile(pathname string, spray SprayCans) error {
 	}
 
 	encoded := json.NewEncoder(file)
+	encoded.SetIndent("", "    ") // Set indentation for pretty print
 	err = encoded.Encode(spray)
 	if err != nil {
 		Logit("Error writing "+fileName+"  "+err.Error(), true, "err")
