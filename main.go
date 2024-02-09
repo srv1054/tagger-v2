@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.2.5"
+		version = "1.3.1"
 
 		attachment Attachment
 	)
@@ -178,15 +178,19 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
-							// Temp message, not implemented yet
-							_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
-							err := DeleteSprayCan(ev.Text, Spray)
-							if err != nil {
-								Logit("Error deleting spray can: "+err.Error(), false, "err")
+							// Implement something that prevents users from deleting spray cans without permissions
+							//_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
+							success, msg := DeleteSprayCan(ev.Text, Spray, TagBot, client)
+							if !success {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add new word to spray can.\n"+msg, false))
+							} else {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText(msg, false))
+								// Reload tags that were written to JSON file
+								Spray, _ = LoadSprayCans(TagBot.SprayJSONPath)
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
-							// Temp message, not implemented yet
+							// Implement something that prevents users from deleting words without permissions
 							_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
 							err := DeleteWord(ev.Text, Spray)
 							if err != nil {

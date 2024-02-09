@@ -200,10 +200,47 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 }
 
 // DeleteSprayCan - deletes a spray can from the JSON
-func DeleteSprayCan(e string, paint SprayCans) error {
-	// Delete a spray can
-	// DeleteSprayCan(ev.Text, Spray)
-	return nil
+func DeleteSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client) (success bool, msg string) {
+
+	var (
+		sprayCan string
+	)
+
+	// break down "e" into the spray can requested
+	tmp := strings.Split(e, " ")
+	if len(tmp) < 4 {
+		return false, "Invalid command. Use x@xxxxxx delete spray can <emoji name (no colons)>`"
+	} else {
+		sprayCan = tmp[3]
+	}
+
+	// Check if the spray can exists
+	exists := false
+	for _, sc := range paint {
+		if sc.Spray == sprayCan {
+			exists = true
+		}
+	}
+	if !exists {
+		return false, "Spray Can " + sprayCan + " does not exist!"
+	}
+
+	// Remove the spray can from the slice
+	for i, sc := range paint {
+		if sc.Spray == sprayCan {
+			paint = append(paint[:i], paint[i+1:]...)
+		}
+	}
+
+	// json marshal and write to file
+	err := WriteJSONTagsFile(TagBot.SprayJSONPath, paint)
+	if err != nil {
+		return false, "Error writing to tags.json: " + err.Error()
+	}
+
+	Logit("Spray Can `"+sprayCan+"` deleted from tags.json", false, "info")
+
+	return true, "Spray Can deleted!"
 }
 
 // DeleteWord - deletes a word from a spray can
