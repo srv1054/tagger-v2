@@ -121,7 +121,7 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 		if len(tmp) < 3 {
 			return false, "Invalid command. Use @tagger add word <spray can> \"<word>\"`"
 		} else {
-			word = tmp[2]
+			word = tmp[1]
 		}
 	} else {
 		return false, "Invalid command. Use @tagger add word <spray can> \"<word>\"`"
