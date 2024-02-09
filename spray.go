@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"unicode"
 
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
@@ -119,6 +120,25 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 		sprayCan = tmp[3]
 		// remove the quotes from the word
 		word = strings.Trim(tmp[4], "\"")
+	}
+
+	/* Validation
+	 - We need to do lots of validation here on what is trying to be added.   Adding simple words or a space can cause tagger to
+		tag everything in the channel all the time, which could be bad or overloading.
+	 - Should not be NaughtyWords list (strip spaces before compare) */
+	for _, nw := range NaughtyWords {
+		if strings.ToLower(strings.ReplaceAll(word, " ", "")) == nw {
+			return false, "Naughty word `" + word + "` cannot be added to a Spray Can!"
+		}
+	}
+	if len(word) < 4 {
+		return false, "Word must be greater then 3 characters, sorry!"
+	}
+	if word == "" {
+		return false, "Word cannot be blank!"
+	}
+	if ContainsOnlySpaces(word) {
+		return false, "Word cannot be all spaces!"
 	}
 
 	// find the specified spray can and then validate the word doens't already exist
@@ -267,4 +287,14 @@ func ScanEmojiList(emoji string, client *socketmode.Client) bool {
 	}
 
 	return false
+}
+
+// ContainsOnlySpaces - checks if a string contains only spaces
+func ContainsOnlySpaces(s string) bool {
+	for _, char := range s {
+		if !unicode.IsSpace(char) {
+			return false
+		}
+	}
+	return true
 }

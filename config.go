@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+// NaughtyWords - Words That Should Not Be Used In Spray Cans Words
+var NaughtyWords = []string{
+	"1",
+	"2",
+	"3",
+}
+
 // TagBot - Bot Configuration Options
 type TagBot struct {
 	SlackHook      string `json:"slackhook"`

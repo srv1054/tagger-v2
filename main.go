@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.2.0"
+		version = "1.2.2"
 
 		attachment Attachment
 	)
@@ -134,7 +134,7 @@ func main() {
 						[x] - list spray cans
 						[x] - add spray can
 						[ ] - delete spray can
-						[ ] - add word
+						[x] - add word
 						[ ] - delete word
 						[x] - help
 					*/
