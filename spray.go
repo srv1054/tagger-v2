@@ -248,7 +248,6 @@ func DeleteSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode
 // DeleteWord - deletes a word from a spray can
 func DeleteWord(e string, paint SprayCans) error {
 	// Delete a word from a spray can
-	// DeleteWord(ev.Text, Spray)
 	return nil
 }
 

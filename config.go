@@ -34,19 +34,20 @@ var NaughtyWords = []string{
 
 // TagBot - Bot Configuration Options
 type TagBot struct {
-	SlackHook      string `json:"slackhook"`
-	SlackAppToken  string `json:"slackapptoken"`
-	SlackBotToken  string `json:"slackbottoken"`
-	BotID          string `json:"botid"`
-	BotName        string `json:"botname"`
-	TeamID         string `json:"teamid"`
-	TeamName       string `json:"teamname"`
-	LogChannel     string `json:"logchannel"`
-	Version        string `json:"version"`
-	SprayJSONPath  string `json:"sprayjsonpath"`
-	Debug          bool   `json:"debug"`
-	TotalSprayCans int
-	TotalWords     int
+	SlackHook       string `json:"slackhook"`
+	SlackAppToken   string `json:"slackapptoken"`
+	SlackBotToken   string `json:"slackbottoken"`
+	BotID           string `json:"botid"`
+	BotName         string `json:"botname"`
+	TeamID          string `json:"teamid"`
+	TeamName        string `json:"teamname"`
+	LogChannel      string `json:"logchannel"`
+	Version         string `json:"version"`
+	SprayJSONPath   string `json:"sprayjsonpath"`
+	AllowDeleteFrom string `json:"allowdeletefrom"`
+	Debug           bool   `json:"debug"`
+	TotalSprayCans  int
+	TotalWords      int
 }
 
 // SprayCans - struct for storing search data and emoji tags read in from tag.json

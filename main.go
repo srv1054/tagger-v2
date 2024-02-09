@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.3.2"
+		version = "1.3.3"
 
 		attachment Attachment
 	)
@@ -133,7 +133,7 @@ func main() {
 						[x] - reload tags
 						[x] - list spray cans
 						[x] - add spray can
-						[ ] - delete spray can
+						[x] - delete spray can
 						[x] - add word
 						[ ] - delete word
 						[x] - help
@@ -178,8 +178,10 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete spray can")) {
-							// Implement something that prevents users from deleting spray cans without permissions
-							//_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
+							if ev.Channel != TagBot.AllowDeleteFrom {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You are not in a channel that allows deletions!", false))
+								break
+							}
 							success, msg := DeleteSprayCan(ev.Text, Spray, TagBot, client)
 							if !success {
 								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add new word to spray can.\n"+msg, false))

@@ -8,5 +8,6 @@
 	"teamname": "",
 	"logchannel": "",
 	"sprayjsonpath": "",
-	"debug": false
+	"debug": false,
+	"allowdeletefrom": ""
 } 
