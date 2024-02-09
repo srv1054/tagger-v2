@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.3.7"
+		version = "2.0.1"
 
 		attachment Attachment
 	)
@@ -128,16 +128,7 @@ func main() {
 					innerEvent := eventsAPIEvent.InnerEvent
 					switch ev := innerEvent.Data.(type) {
 
-					// Handle direct messages to the Bot Name Mention
-					/*
-						[x] - reload tags
-						[x] - list spray cans
-						[x] - add spray can
-						[x] - delete spray can
-						[x] - add word
-						[ ] - delete word
-						[x] - help
-					*/
+					// Check for mentions of the bot
 					case *slackevents.AppMentionEvent:
 						if strings.Contains(ev.Text, strings.ToLower("reload tags")) {
 							Spray, err = LoadSprayCans(TagBot.SprayJSONPath)
