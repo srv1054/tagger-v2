@@ -112,6 +112,7 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 		word     string
 	)
 
+	// PROBLEM IS THE QUOTE THING ISN"T WORKING RIGHT
 	// break down "e" into the word requested
 	tmp := strings.Split(e, " ")
 	if len(tmp) < 5 {
@@ -137,9 +138,9 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 	if word == "" {
 		return false, "Word cannot be blank!"
 	}
-	//if ContainsOnlySpaces(word) {
-	//	return false, "Word cannot be all spaces!"
-	//}
+	if ContainsOnlySpaces(word) {
+		return false, "Word cannot be all spaces!"
+	}
 
 	// find the specified spray can and then validate the word doens't already exist
 	for _, sc := range paint {
