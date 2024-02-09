@@ -7,10 +7,29 @@ import (
 )
 
 // NaughtyWords - Words That Should Not Be Used In Spray Cans Words
+//
+//	System already validates for more then 3 characters and not all spaces
+//	So this list should only contain words greater then 3 characters
+//	During validation of this array, spaces are stripped.  So you do not have to list " the " and "the" and " the", etc.
 var NaughtyWords = []string{
-	"1",
-	"2",
-	"3",
+	"with",
+	"that",
+	"this",
+	"have",
+	"from",
+	"they",
+	"will",
+	"what",
+	"when",
+	"make",
+	"like",
+	"time",
+	"just",
+	"know",
+	"take",
+	"into",
+	"year",
+	"your",
 }
 
 // TagBot - Bot Configuration Options
