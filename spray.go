@@ -246,9 +246,70 @@ func DeleteSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode
 }
 
 // DeleteWord - deletes a word from a spray can
-func DeleteWord(e string, paint SprayCans) error {
-	// Delete a word from a spray can
-	return nil
+func DeleteWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client) (success bool, msg string) {
+	var (
+		exists   bool = false
+		sprayCan string
+		word     string
+	)
+
+	// break down "e" into the word requested
+	// Check if e contains quotes around the word
+	re := regexp.MustCompile(`"`)
+	if re.MatchString(e) {
+		tmp := strings.Split(e, "\"")
+		if len(tmp) < 3 {
+			return false, "Invalid command. Use @tagger delete word <spray can> \"<word>\"`"
+		} else {
+			word = tmp[1]
+		}
+	} else {
+		return false, "Invalid command. Use @tagger delete word <spray can> \"<word>\"`"
+	}
+
+	tmp := strings.Split(e, " ")
+	if len(tmp) < 5 {
+		return false, "Invalid command. Use `@tagger delete word <spray can> \"<word>\"`"
+	} else {
+		sprayCan = tmp[3]
+		// remove the quotes from the spray can if someone used them
+		if re.MatchString(sprayCan) {
+			sprayCan = strings.Trim(tmp[3], "\"")
+		}
+	}
+
+	// Check if the spray can exists
+	exists = false
+	for _, sc := range paint {
+		if sc.Spray == sprayCan {
+			exists = true
+		}
+	}
+	if !exists {
+		return false, "Spray Can `" + sprayCan + "` does not exist!"
+	}
+
+	// Remove the word from the spray can
+	for i, sc := range paint {
+		if sc.Spray == sprayCan {
+			for j, w := range sc.Words {
+				if w == word {
+					paint[i].Words = append(paint[i].Words[:j], paint[i].Words[j+1:]...)
+				}
+			}
+		}
+	}
+
+	// json marshal and write to file
+	err := WriteJSONTagsFile(TagBot.SprayJSONPath, paint)
+	if err != nil {
+		return false, "Error writing to tags.json: " + err.Error()
+	}
+
+	Logit("Word `"+word+"` deleted from Spray Can `"+sprayCan+"` in tags.json", false, "info")
+
+	return true, "Word `" + word + "` deleted from Spray Can `" + sprayCan + "`!"
+
 }
 
 // ListTags - lists all the spray cans and their words

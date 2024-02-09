@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.3.4"
+		version = "1.3.5"
 
 		attachment Attachment
 	)
@@ -191,14 +191,18 @@ func main() {
 								Spray, _ = LoadSprayCans(TagBot.SprayJSONPath)
 							}
 						}
-						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
+						if strings.Contains(ev.Text, strings.ToLower("delete word ")) {
 							if ev.Channel != TagBot.AllowDeleteFrom {
 								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You are not in a channel that allows deletions!", false))
 								break
 							}
-							err := DeleteWord(ev.Text, Spray)
-							if err != nil {
-								Logit("Error deleting word: "+err.Error(), false, "err")
+							success, msg := DeleteWord(ev.Text, Spray, TagBot, client)
+							if !success {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("Failed to add new word to spray can.\n"+msg, false))
+							} else {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText(msg, false))
+								// Reload tags that were written to JSON file
+								Spray, _ = LoadSprayCans(TagBot.SprayJSONPath)
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("help")) {
