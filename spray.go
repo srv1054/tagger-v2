@@ -313,7 +313,7 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 			},
 			{
 				Title: "",
-				Value: "`@tagger add spray word` - Add keyword to a spray can (tag)\nYou must specify an existing Spray Can\nWord *must* be in \"\" quotation marks to allow for spaces.\n`@tagger delete word` - Delete a spray can (tag)",
+				Value: "`@tagger add spray can word` - Add keyword to a spray can (tag)\nYou must specify an existing Spray Can\nWord *must* be in \"\" quotation marks to allow for spaces.\n`@tagger delete word` - Delete a spray can (tag)",
 				Short: false,
 			},
 		},
@@ -324,7 +324,7 @@ func SendHelp(user string, TagBot TagBot, client *socketmode.Client) {
 		Fields: []*Field{
 			{
 				Title: "Specifics for Adding Words to Spray Cans",
-				Value: "`@tagger add word <Spray Can> <new word>`\ne.g.: `@taggerbot add word smile happyness`\nThe <Spray Can> must exist as a real slack emoji.",
+				Value: "`@tagger add word <Spray Can> \"<new word>\"`\ne.g.: `@taggerbot add word smile \"happyness\"`\nThe <Spray Can> must exist as a real slack emoji.",
 				Short: false,
 			},
 			{
