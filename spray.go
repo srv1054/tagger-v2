@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"unicode"
@@ -208,10 +209,11 @@ func DeleteSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode
 
 	// break down "e" into the spray can requested
 	tmp := strings.Split(e, " ")
-	if len(tmp) < 4 {
-		return false, "Invalid command. Use x@xxxxxx delete spray can <emoji name (no colons)>`"
+	Logit(fmt.Sprintf("%v", tmp), false, "info")
+	if len(tmp) < 5 {
+		return false, "Invalid command. Use @tagger delete spray can <emoji name (no colons)>`"
 	} else {
-		sprayCan = tmp[3]
+		sprayCan = tmp[4]
 	}
 
 	// Check if the spray can exists
@@ -222,7 +224,7 @@ func DeleteSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode
 		}
 	}
 	if !exists {
-		return false, "Spray Can " + sprayCan + " does not exist!"
+		return false, "Spray Can `" + sprayCan + "` does not exist!"
 	}
 
 	// Remove the spray can from the slice
@@ -240,7 +242,7 @@ func DeleteSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode
 
 	Logit("Spray Can `"+sprayCan+"` deleted from tags.json", false, "info")
 
-	return true, "Spray Can deleted!"
+	return true, "Spray Can `" + sprayCan + "` deleted!"
 }
 
 // DeleteWord - deletes a word from a spray can
