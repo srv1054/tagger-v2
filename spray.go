@@ -155,6 +155,17 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 		return false, "The word `" + word + "` already exists in Spray Can `" + sprayCan + "`!"
 	}
 
+	// Validate that the Spray Can already exists
+	exists = false
+	for _, sc := range paint {
+		if sc.Spray == sprayCan {
+			exists = true
+		}
+	}
+	if !exists {
+		return false, "Spray Can `" + sprayCan + "` does not exist!"
+	}
+
 	// Add word to spray can
 	for i, sc := range paint {
 		if sc.Spray == sprayCan {
