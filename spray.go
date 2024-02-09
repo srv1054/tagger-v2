@@ -131,15 +131,15 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 			return false, "Common word `" + word + "` cannot be added to a Spray Can `" + sprayCan + "`"
 		}
 	}
-	if ContainsOnlySpaces(word) {
-		return false, "Word cannot be all spaces!"
-	}
 	if len(word) < 4 {
 		return false, "Words must be greater then 3 characters, sorry `" + word + "` won't work!"
 	}
 	if word == "" {
 		return false, "Word cannot be blank!"
 	}
+	//if ContainsOnlySpaces(word) {
+	//	return false, "Word cannot be all spaces!"
+	//}
 
 	// find the specified spray can and then validate the word doens't already exist
 	for _, sc := range paint {
