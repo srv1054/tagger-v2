@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "1.3.3"
+		version = "1.3.4"
 
 		attachment Attachment
 	)
@@ -192,8 +192,10 @@ func main() {
 							}
 						}
 						if strings.Contains(ev.Text, strings.ToLower("delete word")) {
-							// Implement something that prevents users from deleting words without permissions
-							_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You do not have permissions to do this!", false))
+							if ev.Channel != TagBot.AllowDeleteFrom {
+								_, _, _ = client.PostMessage(ev.Channel, slack.MsgOptionText("You are not in a channel that allows deletions!", false))
+								break
+							}
 							err := DeleteWord(ev.Text, Spray)
 							if err != nil {
 								Logit("Error deleting word: "+err.Error(), false, "err")
