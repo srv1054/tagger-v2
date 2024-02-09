@@ -43,6 +43,7 @@ If you are running this bot in *NIX operating systems, its best to run it inside
    
 
 ### Work TODO
+- [ ] - BUILD TESTS!  Ya, we got none and that's dumb
 - [ ] - Add ability to lock down adds to a specific channel (same as deletes)
 - [ ] - Add ability to open up adds/deletes to anyone (scarey)
 - [ ] - Add ability to lock things down by user GUID

@@ -3,3 +3,4 @@ tagger.exe
 tagger
 config.json
 tags.json
+*.exe
