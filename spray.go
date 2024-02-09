@@ -278,6 +278,16 @@ func DeleteWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cli
 		}
 	}
 
+	/* Validation
+	Check that we aren't removing blanks or empty strings
+	*/
+	if word == "" {
+		return false, "Word cannot be blank!"
+	}
+	if ContainsOnlySpaces(word) {
+		return false, "Word cannot be all spaces!"
+	}
+
 	// Check if the spray can exists
 	exists = false
 	for _, sc := range paint {
