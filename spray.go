@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -80,9 +81,9 @@ func AddSprayCan(e string, paint SprayCans, TagBot TagBot, client *socketmode.Cl
 	// Check slack to see if emoji exists
 	// This feature does work, however the Slack API does NOT return emojis that are "built-in" to the server, only custom user emojis
 	// This is a limitation of the Slack API, so this feature is commented out for now
-	//if !ScanEmojiList(e, client) {
-	//return false, "Emoji `" + e + "` does not exist on the server!"
-	//}
+	/* if !ScanEmojiList(e, client) {
+		return false, "Emoji `" + e + "` does not exist on the server!"
+	} */
 
 	// Add e to spray cans
 	paint = append(paint, struct {
@@ -112,15 +113,29 @@ func AddWord(e string, paint SprayCans, TagBot TagBot, client *socketmode.Client
 		word     string
 	)
 
-	// PROBLEM IS THE QUOTE THING ISN"T WORKING RIGHT
 	// break down "e" into the word requested
+	// Check if e contains quotes around the word
+	re := regexp.MustCompile(`"`)
+	if re.MatchString(e) {
+		tmp := strings.Split(e, "\"")
+		if len(tmp) < 3 {
+			return false, "Invalid command. Use @tagger add word <spray can> \"<word>\"`"
+		} else {
+			word = tmp[2]
+		}
+	} else {
+		return false, "Invalid command. Use @tagger add word <spray can> \"<word>\"`"
+	}
+
 	tmp := strings.Split(e, " ")
 	if len(tmp) < 5 {
 		return false, "Invalid command. Use `@tagger add word <spray can> \"<word>\"`"
 	} else {
 		sprayCan = tmp[3]
-		// remove the quotes from the word
-		word = strings.Trim(tmp[4], "\"")
+		// remove the quotes from the spray can if someone used them
+		if re.MatchString(sprayCan) {
+			sprayCan = strings.Trim(tmp[3], "\"")
+		}
 	}
 
 	/* Validation
