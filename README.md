@@ -24,23 +24,54 @@ If you are running this bot in *NIX operating systems, its best to run it inside
 ## The inner workings!
 
 ### Tagger Commands (from within slack)
- - one
- - two
+You can get a list of these commands from within slack by asking `tagger` for help: `@tagger` help\
+`@tagger` list spray cans - List all availabe tags\
+`@tagger` add spray can - Add a tag\
+`@tagger` delete spray can - Delete a tag\
+`@tagger` reload spray cans - Reload tags.json\
+`@tagger` add spray can word - Add keyword to a spray can (tag)\
+&nbsp;&nbsp; &nbsp; You must specify an existing Spray Can\
+&nbsp;&nbsp; &nbsp; Word must be in (" ") quotation marks to allow for spaces.\
+`@tagger` delete word - Delete a spray can (tag)
+
+Specifics for Adding Words to Spray Cans:\
+&nbsp; &nbsp; `@tagger` add word \<spray can> "\<new word>"\
+&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; e.g.: `@taggerbot add word smile "happyness"`\
+&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; The \<spray can> must exist as a real slack emoji.
+
+Specifics for Adding new Spray Cans:\
+&nbsp;&nbsp; `@tagger` add spray can <emoji name (no colons)>\
+&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; e.g.: @taggerbot add spray can catwave\
+&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; The <emoji name> must exist as a real slack emoji.
    
 ### Tagger CLI Variables
- - one
- - two
-   
+`-h` - Command line help\
+`-v` - Show current version and exit\
+`-cp` - Path to configuration file\
+`-jp` - Path to SprayCan JSON file
+
+Paths should be in quote if they contain spaces.\
+Path specifications should include filename   
 
 ### configs.json
- - one
- - two
+	"slackhook": "",  - Slack App Webhook
+	"slackapptoken": "", - Slack App APP TOKEN
+	"slackbottoken": "", - Slack App BOT TOKEN
+	"botid": "", - Currently un-used
+	"botname": "", - The name your bot will display as when it posts to slack
+	"teamid": "", - Currently un-used
+	"teamname": "", - Currently un-used
+	"logchannel": "", - Slack channel for tagger to send log messages to
+	"sprayjsonpath": "", - Currently un-used
+	"debug": false, - Turn on excessive logging information
+	"allowdeletefrom": "" - List of Slack UIDs that can delete JSON entries from within Slack app
    
 
 ### tags.json
- - one
- - two
-   
+See [/configs/tas.json.example](https://github.com/srv1054/tagger-v2/tree/main/configs) for a starter file and how to use the format.   You can edit this file manually or via the slack app interface.  Large edits are easier to do manually.   Don't forget to validate your JSON formatting, and after editing you must either restart `tagger` or from slack do an `@tagger reload spray cans`
+
+### /emoji directory
+There are two graphics in the source [/emoji](https://github.com/srv1054/tagger-v2/tree/main/emoji) directory that should be used when configuring slack.   The 512x512 is setup for the Slack App Bot configuration which requires a graphic of 512x512 or 256x256 square.   The smaller emoji graphic should be added into your slack server as a standard emoji called :tagger:
 
 ### Work TODO
 - [ ] - BUILD TESTS!  Ya, we got none and that's dumb
