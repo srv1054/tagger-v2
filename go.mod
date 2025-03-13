@@ -1,6 +1,7 @@
 module tagger
 
 go 1.21.6
+toolchain go1.23.7
 
 require (
 	github.com/parnurzeal/gorequest v0.2.16
@@ -12,6 +13,6 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
-	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
 	moul.io/http2curl v1.0.0 // indirect
 )
