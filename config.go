@@ -62,18 +62,20 @@ func LoadBotConfig(configPath string) (tagbot TagBot, err error) {
 
 	if configPath == "" {
 		fileName = "config.json"
+	} else {
+		fileName = configPath
 	}
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		Logit("error opening config.json file: "+err.Error(), true, "err")
+		Logit("error opening "+fileName+" file: "+err.Error(), true, "err")
 		return tagbot, err
 	}
 
 	decoded := json.NewDecoder(file)
 	err = decoded.Decode(&tagbot)
 	if err != nil {
-		Logit("error reading invalid config.json file: "+err.Error(), true, "err")
+		Logit("error reading invalid "+fileName+" file: "+err.Error(), true, "err")
 		return tagbot, err
 	}
 
