@@ -21,6 +21,43 @@ To get this running you can:
 
 If you are running this bot in *NIX operating systems, its best to run it inside `screen` or once you are happy its working built it into a systemctl service to run at startup
 
+### Running as a service
+ - sudo mkdir -p /opt/tagger  
+ - sudo cp /path/to/tagger /opt/tagger/  
+ - sudo cp /path/to/config.json /opt/tagger  
+
+Create `/etc/systemd/system/tagger.service`
+
+```[Unit]
+Description=Tagger Slack Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/tagger
+ExecStart=/opt/tagger/tagger -c /opt/tagger/config.json -j /opt/tagger/tags.json
+Restart=on-failure
+RestartSec=5s
+# Optional: limit resources / file handles
+LimitNOFILE=65536
+
+# The app already writes daily logs (tagger-YYYY-MM-DD.log) to WorkingDirectory.
+# Stdout/stderr also go to journald:
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target```
+
+- sudo systemctl daemon-reload
+- sudo systemctl enable --now tagger
+- sudo systemctl status tagger --no-pager
+- # Follow logs
+- journalctl -u tagger -f
+
 ## The inner workings!
 
 ### Tagger Commands (from within slack)
