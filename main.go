@@ -17,7 +17,7 @@ import (
 func main() {
 
 	var (
-		version = "2.0.3"
+		version = "2.0.5"
 
 		attachment Attachment
 	)
@@ -131,9 +131,34 @@ func main() {
 					// Check for mentions of the bot
 					case *slackevents.AppMentionEvent:
 						if strings.Contains(ev.Text, strings.ToLower("reload tags")) {
-							Spray, err = LoadSprayCans(TagBot.SprayJSONPath)
+							// Totals before reload
+							prevCans := len(Spray)
+							prevWords := 0
+							for _, v := range Spray {
+								prevWords += len(v.Words)
+							}
+
+							// Determine path and reload
+							reloadPath := TagBot.SprayJSONPath
+							if reloadPath == "" {
+								reloadPath = "tags.json"
+							}
+							Spray, err = LoadSprayCans(reloadPath)
 							Logit("Reloading tags.json", false, "info")
-							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Sure, I have reloaded your tags.json file.", false))
+
+							// Totals after reload
+							newCans := len(Spray)
+							newWords := 0
+							for _, v := range Spray {
+								newWords += len(v.Words)
+							}
+
+							// Update TagBot counters
+							TagBot.TotalSprayCans = newCans
+							TagBot.TotalWords = newWords
+
+							msg := fmt.Sprintf("Sure, I have reloaded your tags.json file.\nTotal Spray Cans: %d -> %d\nTotal Words: %d -> %d", prevCans, newCans, prevWords, newWords)
+							_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText(msg, false))
 							if err != nil {
 								Logit("failed posting message: "+err.Error(), false, "err")
 							}
